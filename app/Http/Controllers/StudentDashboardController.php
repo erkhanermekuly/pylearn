@@ -73,7 +73,7 @@ class StudentDashboardController extends Controller
             $teacher->notify(new NewSubmissionNotification($submission));
         }
 
-        return back()->with('success', 'Отправка успешно сохранена.');
+        return back()->with('success', __('messages.flash.submission_saved'));
     }
 
     public function addComment(Request $request, $submissionId)
@@ -99,7 +99,7 @@ class StudentDashboardController extends Controller
             $admin->notify(new NewCommentNotification($comment));
         }
 
-        return redirect()->back()->with('success', 'Комментарий добавлен');
+        return redirect()->back()->with('success', __('messages.flash.comment_added'));
     }
 
     public function aiChat(Request $request, $lessonId, AiTutorService $ai)
@@ -111,8 +111,8 @@ class StudentDashboardController extends Controller
         $lesson = Lesson::findOrFail($lessonId);
 
         $reply = $ai->chatAboutLesson([
-            'lesson_title' => $lesson->title,
-            'lesson_content' => $lesson->content,
+            'lesson_title' => $lesson->translate('title'),
+            'lesson_content' => $lesson->translate('content'),
             'message' => $request->message,
         ]);
 

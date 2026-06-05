@@ -33,28 +33,32 @@ class TestController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Тест сәтті сақталды!',
+                'message' => __('messages.flash.test_saved'),
                 'test' => $test
             ]);
         } catch (\Exception $e) {
             \Log::error('Test save error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Серверде қате туындады: ' . $e->getMessage()
+                'message' => __('messages.flash.server_error', ['message' => $e->getMessage()])
             ], 500);
         }
     }
 
     public function showTest($lesson_id)
     {
-        $test = Test::where('lesson_id', $lesson_id)->firstOrFail();
-        return view('student.test', compact('test'));
+        $test = Test::with('lesson')->where('lesson_id', $lesson_id)->firstOrFail();
+        $localizedQuestions = $test->localizedQuestions();
+
+        return view('student.test', compact('test', 'localizedQuestions'));
     }
 
     public function show($id)
     {
-        $test = Test::findOrFail($id);
-        return view('student.test', compact('test'));
+        $test = Test::with('lesson')->findOrFail($id);
+        $localizedQuestions = $test->localizedQuestions();
+
+        return view('student.test', compact('test', 'localizedQuestions'));
     }
 
     public function submit(Request $request, $id)
@@ -62,6 +66,7 @@ class TestController extends Controller
         $test = Test::findOrFail($id);
         $userAnswers = $request->input('answers', []);
         $questions = $test->questions;
+        $localizedQuestions = $test->localizedQuestions();
 
         $correctCount = 0;
         $wrongQuestions = [];
@@ -72,11 +77,12 @@ class TestController extends Controller
             if ($userAnswer !== null && $userAnswer == $q['correct']) {
                 $correctCount++;
             } else {
+                $localized = $localizedQuestions[$index] ?? $q;
                 $wrongQuestions[] = [
                     'index' => $index,
-                    'question_text' => $q['text'],
-                    'topic' => $q['topic'] ?? 'Бұл сұрақтан қате кетті',
-                    'user_option' => $userAnswer !== null ? (int)$userAnswer : -1, // ✅ ДОБАВИЛИ
+                    'question_text' => $localized['text'] ?? $q['text'],
+                    'topic' => $localized['topic'] ?? $localized['text'] ?? __('messages.test.wrong_topic_default'),
+                    'user_option' => $userAnswer !== null ? (int)$userAnswer : -1,
                 ];
             }
         }
@@ -119,16 +125,17 @@ class TestController extends Controller
 
         // Грузим тест + lesson (лекция)
         $test = Test::with('lesson')->findOrFail($id);
-        $questions = $test->questions;
+        $questions = $test->localizedQuestions($lang);
 
         if (!is_array($questions) || !isset($questions[$qIndex])) {
             return response()->json(['error' => 'Question not found'], 404);
         }
 
         $q = $questions[$qIndex];
+        $baseQuestions = $test->questions;
         $questionText = (string)($q['text'] ?? '');
         $options = $q['options'] ?? [];
-        $correctIndex = (int)($q['correct'] ?? -1); // ✅ у тебя correct
+        $correctIndex = (int)(($baseQuestions[$qIndex]['correct'] ?? $q['correct']) ?? -1);
 
         if (!is_array($options) || $correctIndex < 0 || !isset($options[$correctIndex])) {
             return response()->json(['error' => 'Correct answer not configured'], 422);
@@ -138,8 +145,8 @@ class TestController extends Controller
         $userText = ($userOpt >= 0 && isset($options[$userOpt])) ? (string)$options[$userOpt] : '—';
 
         $lesson = $test->lesson;
-        $lectureTitle = (string)($lesson->title ?? '');
-        $lectureHtml = (string)($lesson->content ?? ''); // ✅ по миграции это правильное поле
+        $lectureTitle = (string)($lesson->translate('title', $lang) ?? '');
+        $lectureHtml = (string)($lesson->translate('content', $lang) ?? '');
 
         $cacheKey = "ai_explain:test{$test->id}:q{$qIndex}:u{$userOpt}:lang{$lang}";
 

@@ -11,10 +11,10 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
                     </svg>
                 </span>
-                Оқылған хабарламалар
+                {{ __('messages.notifications.read_title') }}
             </h2>
             <span class="text-xs font-bold text-slate-400 uppercase tracking-widest bg-white px-3 py-1 rounded-full border border-slate-200">
-                Барлығы: {{ $readNotifications->total() }}
+                {{ __('messages.common.total') }}: {{ $readNotifications->total() }}
             </span>
         </div>
 
@@ -44,7 +44,7 @@
                                 @if(isset($notification->data['lesson_id']))
                                     <a href="{{ route('student.lessons.show', $notification->data['lesson_id']) }}" 
                                        class="inline-flex items-center px-4 py-2 bg-indigo-50 text-indigo-600 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
-                                        Өту
+                                        {{ __('messages.common.go') }}
                                         <svg class="w-3.5 h-3.5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
                                         </svg>
@@ -52,7 +52,7 @@
                                 @elseif(isset($notification->data['submission_id']))
                                     <a href="{{ route('teacher.submission.view', $notification->data['submission_id']) }}" 
                                        class="inline-flex items-center px-4 py-2 bg-slate-50 text-slate-600 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-slate-800 hover:text-white transition-all shadow-sm">
-                                        Көру
+                                        {{ __('messages.common.view') }}
                                         <svg class="w-3.5 h-3.5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -75,7 +75,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
                     </svg>
                 </div>
-                <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">Оқылған хабарламалар әлі жоқ</p>
+                <p class="text-slate-400 font-bold uppercase tracking-widest text-xs">{{ __('messages.notifications.empty') }}</p>
             </div>
         @endif
     </div>

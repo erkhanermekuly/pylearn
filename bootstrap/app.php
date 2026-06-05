@@ -14,7 +14,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
             'role' => RoleMiddleware::class,
-        ]);    })
+        ]);
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
+    })
     ->withExceptions(function (Exceptions $exceptions) {
     $exceptions->render(function (Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
         if ($e->getStatusCode() === 403) {
@@ -22,13 +26,13 @@ return Application::configure(basePath: dirname(__DIR__))
                 $role = auth()->user()->role;
 
                 return match ($role) {
-                    'teacher' => redirect()->route('teacher.dashboard')->with('error', 'Нет доступа к этому разделу.'),
-                    'student' => redirect()->route('student.dashboard')->with('error', 'Нет доступа к этому разделу.'),
-                    default => redirect()->route('login.form')->with('error', 'Недопустимая роль.'),
+                    'teacher' => redirect()->route('teacher.dashboard')->with('error', __('errors.no_access')),
+                    'student' => redirect()->route('student.dashboard')->with('error', __('errors.no_access')),
+                    default => redirect()->route('login.form')->with('error', __('errors.invalid_role')),
                 };
             }
 
-            return redirect()->route('login.form')->with('error', 'Авторизуйтесь для доступа.');
+            return redirect()->route('login.form')->with('error', __('errors.login_required'));
         }
 
         // по умолчанию — пробрасываем исключение дальше

@@ -30,6 +30,6 @@ class SubmissionController extends Controller
             ]
         );
 
-        return back()->with('success', 'Домашнее задание отправлено.');
+        return back()->with('success', __('messages.flash.homework_submitted'));
     }
 }

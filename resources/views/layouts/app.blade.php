@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="kk">
+<html lang="{{ app()->getLocale() }}">
 <head>
     <meta charset="UTF-8">
-    <title>{{ $title ?? 'Python Learning' }}</title>
+    <title>{{ $title ?? __('messages.common.app_name') }}</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script>
@@ -35,12 +35,13 @@
         <a href="{{ $isTeacher ? '/teacher' : '/' }}" class="flex items-center gap-3 lg:gap-4 group">
             <img src="{{ asset('images/python-logo.svg') }}" class="h-10 w-10 lg:h-12 lg:w-12 group-hover:scale-105 transition-transform" alt="Python">
             <div class="block">
-                <p class="font-heading text-sm lg:text-base font-black leading-tight tracking-tight" style="color: var(--text-primary)">Python Learning</p>
-                <p class="hidden sm:block text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.12em]" style="color: var(--text-secondary)">Өз бетінше үйрену платформасы</p>
+                <p class="font-heading text-sm lg:text-base font-black leading-tight tracking-tight" style="color: var(--text-primary)">{{ __('messages.common.app_name') }}</p>
+                <p class="hidden sm:block text-[9px] lg:text-[10px] font-medium uppercase tracking-[0.12em]" style="color: var(--text-secondary)">{{ __('messages.common.tagline') }}</p>
             </div>
         </a>
 
         <div class="flex items-center space-x-3 lg:space-x-5">
+            @include('partials.locale-switcher')
             @include('partials.theme-toggle')
 
             <div class="flex items-center space-x-3 pr-3 lg:pr-5 border-r" style="border-color: var(--border-color)">
@@ -52,7 +53,7 @@
             <a href="{{ route('logout') }}"
                 onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
                 class="h-9 w-9 lg:h-11 lg:w-auto lg:px-6 flex items-center justify-center rounded-lg lg:rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-all shadow-md">
-                <span class="hidden lg:inline">Шығу</span>
+                <span class="hidden lg:inline">{{ __('messages.common.logout') }}</span>
                 <svg class="w-5 h-5 lg:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7" />
                 </svg>
@@ -72,16 +73,22 @@
             <div class="flex items-center gap-3">
                 <img src="{{ asset('images/python-logo.svg') }}" alt="Python" class="w-10 h-10 rounded-lg">
                 <div>
-                    <p class="text-sm font-black" style="color: var(--text-primary)">Lumina Python</p>
-                    <p class="text-xs" style="color: var(--text-secondary)">Автор: Еркін Есхат</p>
+                    <p class="text-sm font-black" style="color: var(--text-primary)">{{ __('messages.common.lumina_python') }}</p>
+                    <p class="text-xs" style="color: var(--text-secondary)">{{ __('messages.common.author') }}</p>
                 </div>
             </div>
             <p class="text-xs max-w-xl" style="color: var(--text-secondary)">
-                Жоба Python бағдарламалау тілін өз бетінше үйренуге арналған. Сабақтар, тесттер және AI көмекші бір платформада.
+                {{ __('messages.common.footer_desc') }}
             </p>
         </div>
     </footer>
 
+    <script>
+        window.luminaI18n = {
+            themeDark: @json(__('messages.theme.dark')),
+            themeLight: @json(__('messages.theme.light')),
+        };
+    </script>
     <script src="{{ asset('js/theme.js') }}"></script>
 </body>
 </html>

@@ -22,9 +22,10 @@
         @php
             $results = session('test_results');
             $isFullScore = $results && $results['score'] == 100;
+            $questions = $localizedQuestions ?? $test->localizedQuestions();
+            $questionCount = count($questions);
         @endphp
 
-        {{-- НӘТИЖЕ ПАНЕЛІ --}}
         @if($results)
             <div class="mb-6 bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-10 shadow-2xl border-2 {{ $isFullScore ? 'border-emerald-100' : 'border-indigo-100' }} overflow-hidden relative">
                 <div class="relative z-10 flex flex-col items-center text-center">
@@ -33,13 +34,13 @@
                     </div>
 
                     <h3 class="text-xl sm:text-2xl font-black text-slate-800 mb-2">
-                        {{ $isFullScore ? 'Керемет нәтиже! 🎉' : 'Тест аяқталды' }}
+                        {{ $isFullScore ? __('messages.test.perfect_result') : __('messages.test.completed') }}
                     </h3>
 
                     @if(!$isFullScore && !empty($results['wrong_questions']))
                         <div class="w-full mt-6 space-y-3">
                             <p class="text-rose-500 font-black uppercase text-[10px] tracking-widest">
-                                Мына сұрақтарды қайталаңыз:
+                                {{ __('messages.test.retry_questions') }}
                             </p>
 
                             @foreach($results['wrong_questions'] as $wrong)
@@ -51,13 +52,12 @@
 
                                         <div class="min-w-0 flex-1">
                                             <p class="text-rose-900 font-bold text-xs sm:text-sm truncate">
-                                                Қате жіберілді
+                                                {{ __('messages.test.wrong_answer') }}
                                             </p>
                                             <p class="text-rose-600 text-[10px] sm:text-xs italic font-medium">
-                                                Тақырып: {{ $wrong['topic'] }}
+                                                {{ __('messages.test.topic') }}: {{ $wrong['topic'] }}
                                             </p>
 
-                                            {{-- ✅ Кнопка ИИ --}}
                                             <div class="mt-2">
                                                 <button
                                                     type="button"
@@ -66,14 +66,13 @@
                                                     data-uopt="{{ $wrong['user_option'] ?? -1 }}"
                                                     data-url="{{ route('student.test.ai_explain', $test->id) }}"
                                                 >
-                                                    🤖 ИИ түсіндірме
+                                                    {{ __('messages.test.ai_explain') }}
                                                 </button>
                                             </div>
 
-                                            {{-- ✅ Панель ответа ИИ --}}
                                             <div class="js-ai-panel mt-3 hidden">
                                                 <div class="js-ai-status text-[11px] text-slate-500">
-                                                    Жүктелуде…
+                                                    {{ __('messages.common.loading') }}
                                                 </div>
                                                 <pre class="js-ai-text mt-2 whitespace-pre-wrap text-[12px] text-slate-800"></pre>
                                             </div>
@@ -84,16 +83,16 @@
                         </div>
 
                         <p class="mt-6 text-slate-400 text-xs font-medium italic">
-                            Қателермен жұмыс істеп, тестті қайта тапсырып көріңіз 👇
+                            {{ __('messages.test.retry_hint') }}
                         </p>
                     @elseif($isFullScore)
                         <p class="text-slate-500 text-sm sm:text-base max-w-sm mx-auto mt-2">
-                            Сіз бұл тақырыпты толық меңгердіңіз! Енді келесі сабаққа өте аласыз.
+                            {{ __('messages.test.mastered') }}
                         </p>
                         <div class="mt-8 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
                             <a href="{{ route('student.lessons.show', $test->lesson->id) }}"
                                class="bg-slate-900 text-white px-8 py-4 rounded-xl font-bold text-sm hover:bg-slate-800 transition-all shadow-lg text-center">
-                                Курсқа қайту
+                                {{ __('messages.test.back_to_course') }}
                             </a>
                         </div>
                     @endif
@@ -101,16 +100,15 @@
             </div>
         @endif
 
-        {{-- ТЕСТ ФОРМАСЫ (Тек 100% болмағанда көрінеді) --}}
         @if(!$isFullScore)
             <div class="sticky top-2 sm:top-4 z-20 mb-4 sm:mb-6">
                 <div class="bg-white/90 backdrop-blur-md rounded-xl sm:rounded-2xl p-3 sm:p-5 shadow-lg border border-slate-200/60 flex items-center justify-between gap-4">
                     <div class="min-w-0">
-                        <h2 class="text-xs sm:text-sm md:text-base font-black text-slate-800 tracking-tight truncate">{{ $test->title }}</h2>
-                        <p class="text-[8px] sm:text-[9px] font-bold text-indigo-500 uppercase tracking-wider mt-0.5 truncate">{{ $test->lesson->title }}</p>
+                        <h2 class="text-xs sm:text-sm md:text-base font-black text-slate-800 tracking-tight truncate">{{ $test->localizedTitle() }}</h2>
+                        <p class="text-[8px] sm:text-[9px] font-bold text-indigo-500 uppercase tracking-wider mt-0.5 truncate">{{ $test->lesson->translate('title') }}</p>
                     </div>
                     <div class="flex flex-col items-end shrink-0">
-                        <span id="progress-text" class="text-[10px] sm:text-xs font-black text-indigo-600 tabular-nums">0 / {{ count($test->questions) }}</span>
+                        <span id="progress-text" class="text-[10px] sm:text-xs font-black text-indigo-600 tabular-nums">0 / {{ $questionCount }}</span>
                         <div class="w-16 sm:w-24 bg-slate-100 h-1.5 rounded-full mt-1 overflow-hidden">
                             <div id="progress-bar" class="bg-indigo-600 h-full transition-all duration-500 ease-out" style="width: 0%"></div>
                         </div>
@@ -122,7 +120,7 @@
                 <form id="test-form" action="{{ route('student.test.submit', $test->id) }}" method="POST" class="p-4 sm:p-8 md:p-12 space-y-8 sm:space-y-12">
                     @csrf
 
-                    @foreach($test->questions as $index => $q)
+                    @foreach($questions as $index => $q)
                         <div class="question-block space-y-4 sm:space-y-6" data-question="{{ $index + 1 }}">
                             <div class="flex gap-3 sm:gap-4">
                                 <span class="w-8 h-8 sm:w-10 sm:h-10 shrink-0 bg-slate-50 text-slate-400 rounded-lg sm:rounded-xl flex items-center justify-center font-black text-xs sm:text-sm border border-slate-100">
@@ -153,7 +151,7 @@
 
                     <div class="pt-8 sm:pt-10 border-t border-slate-100">
                         <button type="submit" onclick="return confirmSubmission()" class="group relative w-full bg-slate-900 text-white font-black py-4 sm:py-5 rounded-xl sm:rounded-2xl shadow-xl hover:bg-indigo-600 transition-all duration-300 uppercase tracking-widest text-[10px] sm:text-xs overflow-hidden">
-                            <span class="relative z-10 flex items-center justify-center gap-2">Тестті аяқтау</span>
+                            <span class="relative z-10 flex items-center justify-center gap-2">{{ __('messages.test.finish') }}</span>
                             <div class="absolute inset-0 bg-indigo-700 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                         </button>
                     </div>
@@ -164,8 +162,16 @@
 </div>
 
 <script>
+    const testI18n = {
+        confirmUnanswered: @json(__('messages.test.confirm_unanswered', ['count' => '__COUNT__'])),
+        confirmSubmit: @json(__('messages.test.confirm_submit')),
+        loading: @json(__('messages.common.loading')),
+        noAnswer: @json(__('messages.test.no_answer')),
+        aiError: @json(__('messages.test.ai_error')),
+    };
+
     function updateProgress() {
-        const total = {{ count($test->questions) }};
+        const total = {{ $questionCount }};
         const checked = document.querySelectorAll('input[type="radio"]:checked').length;
         const percent = (checked / total) * 100;
         const progressBar = document.getElementById('progress-bar');
@@ -175,27 +181,26 @@
     }
 
     function confirmSubmission() {
-        const total = {{ count($test->questions) }};
+        const total = {{ $questionCount }};
         const checked = document.querySelectorAll('input[type="radio"]:checked').length;
         if (checked < total) {
-            return confirm('Сізде ' + (total - checked) + ' жауапсыз сұрақ қалды. Жібере бересіз бе?');
+            return confirm(testI18n.confirmUnanswered.replace('__COUNT__', total - checked));
         }
-        return confirm('Жауаптарды жіберуге сенімдісіз бе?');
+        return confirm(testI18n.confirmSubmit);
     }
 
     window.onload = updateProgress;
 
-    // ✅ ИИ разбор: lazy + cache + abort (без лагов)
     (() => {
-        const cache = new Map();      // key: q|u -> markdown
-        const inflight = new Map();   // key -> AbortController
+        const cache = new Map();
+        const inflight = new Map();
         const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
         function setPanel(panel, {loading, text}) {
             panel.classList.remove('hidden');
             const status = panel.querySelector('.js-ai-status');
             const pre = panel.querySelector('.js-ai-text');
-            if (status) status.textContent = loading ? 'Жүктелуде…' : '';
+            if (status) status.textContent = loading ? testI18n.loading : '';
             if (pre && text != null) pre.textContent = text;
         }
 
@@ -206,7 +211,7 @@
             const qindex = btn.dataset.qindex;
             const uopt = btn.dataset.uopt;
             const url = btn.dataset.url;
-            const lang = "{{ app()->getLocale() === 'ru' ? 'ru' : 'kk' }}";
+            const lang = "{{ app()->getLocale() === 'ru' ? 'ru' : (app()->getLocale() === 'en' ? 'en' : 'kk') }}";
 
             const wrap = btn.parentElement?.parentElement;
             const panel = wrap ? wrap.querySelector('.js-ai-panel') : null;
@@ -214,7 +219,6 @@
 
             const key = qindex + '|' + uopt;
 
-            // toggle close
             if (!panel.classList.contains('hidden')) {
                 panel.classList.add('hidden');
                 if (inflight.has(key)) {
@@ -224,7 +228,6 @@
                 return;
             }
 
-            // cache hit
             if (cache.has(key)) {
                 setPanel(panel, {loading: false, text: cache.get(key)});
                 return;
@@ -255,13 +258,13 @@
                 if (!res.ok) throw new Error('AI error: ' + res.status);
 
                 const data = await res.json();
-                const text = data?.markdown ?? 'Жауап жоқ.';
+                const text = data?.markdown ?? testI18n.noAnswer;
 
                 cache.set(key, text);
                 requestAnimationFrame(() => setPanel(panel, {loading: false, text}));
             } catch (err) {
                 if (err.name === 'AbortError') return;
-                requestAnimationFrame(() => setPanel(panel, {loading: false, text: 'Қате. Қайта көріңіз.'}));
+                requestAnimationFrame(() => setPanel(panel, {loading: false, text: testI18n.aiError}));
             } finally {
                 inflight.delete(key);
             }

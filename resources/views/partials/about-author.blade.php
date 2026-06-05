@@ -4,25 +4,22 @@
             <img src="{{ asset('images/python-logo.svg') }}" alt="Python">
         </div>
         <div>
-            <p class="about-author-eyebrow">Lumina Python</p>
-            <h3 class="about-author-title">Python өз бетінше үйрену</h3>
+            <p class="about-author-eyebrow">{{ __('messages.common.lumina_python') }}</p>
+            <h3 class="about-author-title">{{ __('messages.about.title') }}</h3>
         </div>
     </div>
 
-    <p class="about-author-desc">
-        Бұл жоба — <strong>Python бағдарламалау тілін өз бетінше үйренуге</strong> арналған интерактивті платформа.
-        Сабақтар, тапсырмалар, тесттер және AI көмекші арқылы студент өз қарқынымен оқи алады.
-    </p>
+    <p class="about-author-desc">{{ __('messages.about.desc') }}</p>
 
     <ul class="about-author-features">
-        <li>Интерактивті сабақтар мен тапсырмалар</li>
-        <li>Автоматты тесттер мен бағалау</li>
-        <li>AI көмекші — кез келген сұраққа жауап</li>
+        <li>{{ __('messages.about.feature_lessons') }}</li>
+        <li>{{ __('messages.about.feature_tests') }}</li>
+        <li>{{ __('messages.about.feature_ai') }}</li>
     </ul>
 
     <div class="about-author-meta">
-        <p><strong>Жоба авторы:</strong> Еркін Есхат</p>
-        <p><strong>Мақсаты:</strong> оқу процесін жеңілдету және Python негіздерін практика арқылы меңгеру</p>
+        <p><strong>{{ __('messages.about.author_label') }}</strong> {{ __('messages.about.author_name') }}</p>
+        <p><strong>{{ __('messages.about.goal_label') }}</strong> {{ __('messages.about.goal') }}</p>
     </div>
 
     <div class="about-author-tags">

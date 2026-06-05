@@ -10,8 +10,11 @@
     function applyTheme(theme) {
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem(storageKey, theme);
+        const i18n = window.luminaI18n || {};
         document.querySelectorAll('[data-theme-label]').forEach((el) => {
-            el.textContent = theme === 'dark' ? '' : '';
+            el.textContent = theme === 'dark'
+                ? (i18n.themeLight || 'Light')
+                : (i18n.themeDark || 'Dark');
         });
     }
 

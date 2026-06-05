@@ -25,6 +25,6 @@ class RoleMiddleware
             return $next($request);
         }
 
-        abort(403, 'Доступ запрещен');
+        abort(403, __('messages.errors.access_denied'));
     }
 }

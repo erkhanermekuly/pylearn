@@ -18,16 +18,17 @@ class SubmissionFeedbackNotification extends Notification
 
     public function via($notifiable)
     {
-        return ['database'];  // Можно добавить email и другие каналы, если надо
+        return ['database'];
     }
 
     public function toDatabase($notifiable)
     {
         return [
-            'message' => "Жауап және баға келді: «{$this->submission->assignment->title}» тапсырмасына.",
+            'message' => __('messages.notifications.feedback_received', [
+                'title' => $this->submission->assignment->translate('title'),
+            ]),
             'submission_id' => $this->submission->id,
-            'lesson_id' => $this->submission->assignment->lesson_id,  // берем id урока через связь
-
+            'lesson_id' => $this->submission->assignment->lesson_id,
         ];
     }
 }

@@ -26,7 +26,10 @@ class NewSubmissionNotification extends Notification
     {
         return [
             'submission_id' => $this->submission->id,
-            'message' => "«{$this->submission->assignment->title}» тапсырмасына студент {$this->submission->user->name} жаңа жұмыс тапсырды",
+            'message' => __('messages.notifications.new_submission', [
+                'title' => $this->submission->assignment->translate('title'),
+                'name' => $this->submission->user->name,
+            ]),
         ];
     }
 }

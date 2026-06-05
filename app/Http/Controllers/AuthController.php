@@ -23,7 +23,7 @@ class AuthController extends Controller
             'email' => 'required|email|unique:users|not_in:' . StudentSeeder::TEACHER_EMAIL,
             'password' => 'required|confirmed|min:6',
         ], [
-            'email.not_in' => 'Бұл email мұғалім аккаунтына арналған. Басқа email қолданыңыз.',
+            'email.not_in' => __('messages.errors.teacher_email'),
         ]);
 
         $user = User::create([
@@ -60,7 +60,7 @@ public function login(Request $request)
     }
 
     return back()->withErrors([
-        'email' => 'Email немесе құпия сөз дұрыс емес',
+        'email' => __('messages.errors.invalid_credentials'),
     ])->onlyInput('email');
 }
 

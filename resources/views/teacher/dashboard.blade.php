@@ -50,8 +50,11 @@
         </button>
         
         <div class="flex flex-col items-center gap-2">
-            <span class="font-black text-indigo-500 tracking-tighter text-sm uppercase">Ұстаз Панелі</span>
-            @include('partials.theme-toggle')
+            <span class="font-black text-indigo-500 tracking-tighter text-sm uppercase">{{ __('messages.teacher.panel') }}</span>
+            <div class="flex items-center gap-2">
+                @include('partials.locale-switcher')
+                @include('partials.theme-toggle')
+            </div>
         </div>
 
         <button onclick="toggleStudentsSidebar()" class="p-2.5 rounded-xl active:scale-95 transition-transform" style="background: var(--bg-card-soft); color: var(--text-secondary)">
@@ -69,19 +72,19 @@
             <div class="p-6 space-y-3">
                 <a href="/teacher/journal" class="flex items-center gap-3 px-5 py-4 rounded-2xl text-white bg-indigo-600 font-black shadow-xl shadow-indigo-100 hover:bg-indigo-700 transition-all uppercase text-[10px] tracking-widest leading-none">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253" stroke-width="2"/></svg>
-                    Журналға өту
+                    {{ __('messages.teacher.go_journal') }}
                 </a>
                 <a href="/teacher/lessons/create" class="flex items-center gap-3 px-5 py-4 rounded-2xl text-indigo-600 bg-indigo-50 font-black hover:bg-indigo-100 transition-all uppercase text-[10px] tracking-widest leading-none text-center">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    Жаңа сабақ
+                    {{ __('messages.teacher.new_lesson') }}
                 </a>
             </div>
 
             <div class="flex-1 overflow-y-auto px-6 py-6">
                 <div class="px-2">
-                    <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">Курс</h2>
-                    <p class="text-sm font-black text-slate-800">Python бағдарламалау</p>
-                    <p class="text-[10px] text-slate-400 font-bold mt-2">{{ $lessons->count() }} сабақ • {{ $students->count() }} студент</p>
+                    <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2">{{ __('messages.teacher.course') }}</h2>
+                    <p class="text-sm font-black text-slate-800">{{ __('messages.teacher.course_name') }}</p>
+                    <p class="text-[10px] text-slate-400 font-bold mt-2">{{ __('messages.teacher.course_stats', ['lessons' => $lessons->count(), 'students' => $students->count()]) }}</p>
                 </div>
             </div>
 <div class="p-6 border-t border-slate-100 bg-white">
@@ -92,13 +95,13 @@
             </div>
             <div class="overflow-hidden">
                 <p class="text-xs font-black text-slate-800 truncate">{{ Auth::user()->name }}</p>
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Оқытушы</p>
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">{{ __('messages.teacher.role') }}</p>
             </div>
         </div>
 
         <form action="{{ route('logout') }}" method="POST" class="shrink-0">
             @csrf
-            <button type="submit" class="p-2.5 bg-slate-50 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all group" title="Шығу">
+            <button type="submit" class="p-2.5 bg-slate-50 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all group" title="{{ __('messages.common.logout') }}">
                 <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
@@ -113,7 +116,7 @@
             {{-- Mobile Header (Тек мобильді нұсқада көрінеді) --}}
             <div class="lg:hidden flex justify-between items-center mb-6">
                 <button onclick="toggleGroupsSidebar()" class="p-3 bg-white rounded-xl shadow-sm text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16" stroke-width="2" stroke-linecap="round"/></svg></button>
-                <span class="font-black text-slate-800 uppercase tracking-widest text-[10px]">LMS Dashboard</span>
+                <span class="font-black text-slate-800 uppercase tracking-widest text-[10px]">{{ __('messages.teacher.lms_dashboard') }}</span>
                 <button onclick="toggleStudentsSidebar()" class="p-3 bg-white rounded-xl shadow-sm text-slate-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" stroke-width="2" stroke-linecap="round"/></svg></button>
             </div>
 
@@ -125,10 +128,10 @@
           
 
             <div class="p-8 border-b border-slate-100 bg-white lg:pt-10">
-                <h3 class="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-600">Студенттер құрамы</h3>
+                <h3 class="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-600">{{ __('messages.teacher.students_list') }}</h3>
                 <div class="flex items-center gap-2 mt-2">
                     <div id="statusDot" class="w-2 h-2 rounded-full bg-slate-300 transition-colors"></div>
-                    <p id="studentCount" class="text-xs text-slate-400 font-bold tracking-tight">{{ $students->count() }} студент</p>
+                    <p id="studentCount" class="text-xs text-slate-400 font-bold tracking-tight">{{ $students->count() }} {{ __('messages.common.students') }}</p>
                 </div>
             </div>
             <div id="studentListContainer" class="flex-1 overflow-y-auto p-6 space-y-3 custom-scrollbar">
@@ -171,7 +174,43 @@
 </script>
 
 <script>
-    const lessons = @json($lessons);
+    window.luminaI18n = Object.assign(window.luminaI18n || {}, @json([
+        'studentsRegistered' => __('messages.teacher.students_registered'),
+        'noLessons' => __('messages.teacher.no_lessons'),
+        'noLessonsHint' => __('messages.teacher.no_lessons_hint'),
+        'pythonCourse' => __('messages.teacher.python_course'),
+        'lessonsHeading' => __('messages.teacher.lessons_heading'),
+        'sortNewest' => __('messages.teacher.sort_newest'),
+        'sortOldest' => __('messages.teacher.sort_oldest'),
+        'testAdded' => __('messages.teacher.test_added'),
+        'pdfMaterial' => __('messages.teacher.pdf_material'),
+        'deleteLessonConfirm' => __('messages.teacher.delete_lesson_confirm'),
+        'deleteLessonError' => __('messages.teacher.delete_lesson_error'),
+        'serverDisconnected' => __('messages.teacher.server_disconnected'),
+        'testNotFound' => __('messages.teacher.test_not_found'),
+        'questionsCount' => __('messages.teacher.questions_count'),
+        'questionNum' => __('messages.teacher.question_num'),
+        'questionTextPlaceholder' => __('messages.teacher.question_text_placeholder'),
+        'optionNum' => __('messages.teacher.option_num'),
+        'testTitleRequired' => __('messages.teacher.test_title_required'),
+        'testSavedAlert' => __('messages.teacher.test_saved_alert'),
+        'back' => __('messages.common.back'),
+        'studentCard' => __('messages.teacher.student_card'),
+        'assignmentsResults' => __('messages.teacher.assignments_results'),
+        'gradeShort' => __('messages.teacher.grade_short'),
+        'pending' => __('messages.journal.pending'),
+        'noActivity' => __('messages.teacher.no_activity'),
+        'newTest' => __('messages.teacher.new_test'),
+        'addQuestions' => __('messages.teacher.add_questions'),
+        'testGeneralTitle' => __('messages.teacher.test_general_title'),
+        'testTitleExample' => __('messages.teacher.test_title_example'),
+        'addMoreQuestions' => __('messages.teacher.add_more_questions'),
+        'cancel' => __('messages.teacher.cancel'),
+        'publishTest' => __('messages.teacher.publish_test'),
+    ]));
+    const i18n = window.luminaI18n;
+
+    const lessons = @json($lessonsForJs ?? $lessons);
     const students = @json($students);
     const baseStorageUrl = "{{ asset('storage') }}";
     let lessonSortOrder = 'newest';
@@ -180,7 +219,7 @@
     function renderStudentList() {
         const studentList = document.getElementById('studentListContainer');
         const studentCount = document.getElementById('studentCount');
-        studentCount.innerText = `${students.length} студент тіркелген`;
+        studentCount.innerText = i18n.studentsRegistered.replace(':count', students.length);
         studentList.innerHTML = students.map(s => `
             <div onclick="showStudent(${s.id})" id="student-card-${s.id}"
                  class="flex items-center gap-3 p-2.5 bg-white border border-slate-100 rounded-xl hover:border-indigo-300 hover:shadow-md cursor-pointer transition-all group">
@@ -206,8 +245,8 @@
                     <path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </div>
-            <h3 class="text-lg font-black text-slate-400 uppercase tracking-widest">Сабақтар жоқ</h3>
-            <p class="text-slate-400 text-xs font-bold mt-2 uppercase tracking-tighter">Әлі сабақтар қосылмаған</p>
+            <h3 class="text-lg font-black text-slate-400 uppercase tracking-widest">${i18n.noLessons}</h3>
+            <p class="text-slate-400 text-xs font-bold mt-2 uppercase tracking-tighter">${i18n.noLessonsHint}</p>
         </div>
     `;
 
@@ -215,13 +254,13 @@
         <div class="max-w-4xl mx-auto pb-10 px-4">
             <div class="flex items-center justify-between mb-8">
                 <div>
-                    <span class="text-indigo-600 font-black text-[10px] uppercase tracking-widest">Python курсы</span>
-                    <h2 class="text-2xl font-black text-slate-900 tracking-tight mt-0.5">Сабақтар</h2>
+                    <span class="text-indigo-600 font-black text-[10px] uppercase tracking-widest">${i18n.pythonCourse}</span>
+                    <h2 class="text-2xl font-black text-slate-900 tracking-tight mt-0.5">${i18n.lessonsHeading}</h2>
                 </div>
                 ${sortedLessons.length > 0 ? `
                     <div class="flex bg-white p-1 rounded-xl shadow-sm border border-slate-200">
-                        <button onclick="setSortOrder('newest')" id="sortNewestBtn" class="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all">Жаңа</button>
-                        <button onclick="setSortOrder('oldest')" id="sortOldestBtn" class="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all">Ескі</button>
+                        <button onclick="setSortOrder('newest')" id="sortNewestBtn" class="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all">${i18n.sortNewest}</button>
+                        <button onclick="setSortOrder('oldest')" id="sortOldestBtn" class="px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all">${i18n.sortOldest}</button>
                     </div>
                 ` : ''}
             </div>
@@ -240,7 +279,7 @@
                             <div class="flex gap-1.5 shrink-0">
                                 ${lesson.test ? `
                                     <div class="flex items-center gap-1.5">
-                                        <span class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-2 py-2 rounded-lg uppercase tracking-wider border border-emerald-100">Тест қосылған</span>
+                                        <span class="text-[9px] font-black text-emerald-600 bg-emerald-50 px-2 py-2 rounded-lg uppercase tracking-wider border border-emerald-100">${i18n.testAdded}</span>
                                         <button onclick="viewTest(${lesson.id})" class="p-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-600 hover:text-white rounded-lg border border-emerald-100 transition-all">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2"/><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" stroke-width="2"/></svg>
                                         </button>
@@ -262,7 +301,7 @@
                         ${lesson.pdf_path ? `
                             <a href="${baseStorageUrl}/${lesson.pdf_path}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 rounded-xl text-[10px] font-black text-white hover:bg-indigo-600 transition-all shadow-md">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-width="2"/></svg> 
-                                PDF МАТЕРИАЛ
+                                ${i18n.pdfMaterial}
                             </a>
                         ` : ''}
                     </div>
@@ -280,7 +319,7 @@
  * Сабақты өшіру функциясы
  */
 async function deleteLesson(lessonId) {
-    if (!confirm('Бұл сабақты өшіруге сенімдісіз бе? Бұл әрекетті қайтару мүмкін емес.')) return;
+    if (!confirm(i18n.deleteLessonConfirm)) return;
 
     try {
         const response = await fetch(`/teacher/lessons/${lessonId}`, {
@@ -294,23 +333,23 @@ async function deleteLesson(lessonId) {
         if (response.ok) {
             window.location.reload();
         } else {
-            alert('Қате орын алды. Сабақты өшіру мүмкін болмады.');
+            alert(i18n.deleteLessonError);
         }
     } catch (error) {
         console.error('Error:', error);
-        alert('Сервермен байланыс үзілді.');
+        alert(i18n.serverDisconnected);
     }
 }
 
     // --- VIEW TEST LOGIC ---
 function viewTest(lessonId) {
     const foundLesson = lessons.find(l => l.id === lessonId);
-    if(!foundLesson || !foundLesson.test) return alert('Тест табылмады');
+    if(!foundLesson || !foundLesson.test) return alert(i18n.testNotFound);
 
     const test = foundLesson.test;
     const container = document.getElementById('viewQuestionsContainer');
     document.getElementById('viewTestTitle').innerText = test.title;
-    document.getElementById('viewTestMeta').innerText = `${test.questions.length} сұрақ`;
+    document.getElementById('viewTestMeta').innerText = i18n.questionsCount.replace(':count', test.questions.length);
 
     container.innerHTML = test.questions.map((q, idx) => `
         <div class="bg-white p-4 md:p-5 rounded-[1.5rem] md:rounded-3xl shadow-sm border border-slate-100">
@@ -363,13 +402,13 @@ function addQuestion() {
     const html = `
         <div class="question-item bg-slate-50 p-4 md:p-5 rounded-[1.5rem] border border-slate-200 transition-all">
             <div class="flex justify-between items-center mb-3">
-                <span class="text-[9px] font-black text-indigo-500 uppercase tracking-widest">Сұрақ #${qIndex + 1}</span>
+                <span class="text-[9px] font-black text-indigo-500 uppercase tracking-widest">${i18n.questionNum.replace(':num', qIndex + 1)}</span>
                 <button onclick="this.closest('.question-item').remove()" class="p-1.5 text-slate-300 hover:text-red-500 hover:bg-red-50 rounded-lg transition-all">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2"/></svg>
                 </button>
             </div>
             
-            <input type="text" placeholder="Сұрақ мәтіні..." 
+            <input type="text" placeholder="${i18n.questionTextPlaceholder}" 
                 class="q-text w-full modern-input px-4 py-2.5 rounded-xl mb-3 text-xs md:text-sm font-bold shadow-sm">
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -377,7 +416,7 @@ function addQuestion() {
                     <div class="flex items-center gap-2 bg-white p-2 rounded-xl border border-slate-100 shadow-sm">
                         <input type="radio" name="correct_${qIndex}" value="${i}" ${i === 0 ? 'checked' : ''} 
                             class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-slate-300 shrink-0">
-                        <input type="text" placeholder="Нұсқа ${i + 1}" 
+                        <input type="text" placeholder="${i18n.optionNum.replace(':num', i + 1)}" 
                             class="q-option w-full px-2 py-1.5 text-[11px] font-medium border-none focus:ring-0 outline-none bg-transparent">
                     </div>
                 `).join('')}
@@ -392,7 +431,7 @@ function addQuestion() {
         const items = document.querySelectorAll('.question-item');
         const testTitle = document.getElementById('testTitle').value;
 
-        if (!testTitle) return alert('Тест атауын жазыңыз!');
+        if (!testTitle) return alert(i18n.testTitleRequired);
 
         items.forEach((item, idx) => {
             const text = item.querySelector('.q-text').value;
@@ -412,7 +451,7 @@ function addQuestion() {
             });
 
             if (response.ok) {
-                alert('Тест сақталды!');
+                alert(i18n.testSavedAlert);
                 location.reload();
             }
         } catch (e) { console.error(e); }
@@ -429,7 +468,7 @@ function addQuestion() {
     let html = `
         <div class="max-w-4xl mx-auto px-4 pb-10">
             <button onclick="renderLessons()" class="flex items-center gap-2 text-indigo-600 font-black text-[10px] md:text-xs uppercase mb-6 md:mb-10 hover:gap-4 transition-all">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-width="2.5"/></svg> Артқа қайту
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M10 19l-7-7m0 0l7-7m-7 7h18" stroke-width="2.5"/></svg> ${i18n.back}
             </button>
 
             <div class="bg-white p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] shadow-sm mb-6 md:mb-10 flex flex-col md:flex-row items-center text-center md:text-left gap-4 md:gap-8 border border-slate-100">
@@ -438,12 +477,12 @@ function addQuestion() {
                 </div>
                 <div>
                     <h2 class="text-xl md:text-3xl font-black text-slate-900 tracking-tighter">${student.name}</h2>
-                    <p class="text-slate-400 font-bold mt-1 uppercase text-[9px] md:text-[10px] tracking-widest text-center md:text-left">Студенттің жеке картасы</p>
+                    <p class="text-slate-400 font-bold mt-1 uppercase text-[9px] md:text-[10px] tracking-widest text-center md:text-left">${i18n.studentCard}</p>
                 </div>
             </div>
 
             <div class="space-y-4">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 mb-2">Тапсырмалар мен нәтижелер</h3>
+                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-4 mb-2">${i18n.assignmentsResults}</h3>
     `;
 
     let hasActivity = false;
@@ -466,9 +505,9 @@ function addQuestion() {
                         </div>
                         <div class="flex items-center gap-3 md:gap-8">
                             <div class="text-right">
-                                <p class="text-[8px] md:text-[9px] font-black text-slate-300 uppercase mb-0.5">Баға</p>
+                                <p class="text-[8px] md:text-[9px] font-black text-slate-300 uppercase mb-0.5">${i18n.gradeShort}</p>
                                 <p class="font-black text-base md:text-xl ${s.grade !== null ? 'text-emerald-500' : 'text-orange-400'}">
-                                    ${s.grade !== null ? s.grade + '<span class="text-[10px] text-slate-300">/100</span>' : 'Күтуде'}
+                                    ${s.grade !== null ? s.grade + '<span class="text-[10px] text-slate-300">/100</span>' : i18n.pending}
                                 </p>
                             </div>
                             <a href="/teacher/submissions/${s.id}" class="bg-slate-900 text-white p-3 md:p-4 rounded-xl md:rounded-2xl hover:bg-indigo-600 transition-all shadow-md">
@@ -482,7 +521,7 @@ function addQuestion() {
     });
 
     if (!hasActivity) {
-        html += `<div class="p-16 text-center bg-white rounded-[2rem] border-2 border-dashed border-slate-100 text-slate-300 font-bold uppercase tracking-widest text-[10px]">Белсенділік жоқ</div>`;
+        html += `<div class="p-16 text-center bg-white rounded-[2rem] border-2 border-dashed border-slate-100 text-slate-300 font-bold uppercase tracking-widest text-[10px]">${i18n.noActivity}</div>`;
     }
 
     main.innerHTML = html + `</div></div>`;
@@ -543,8 +582,8 @@ function addQuestion() {
             
             <div class="p-5 md:p-6 border-b border-slate-100 flex justify-between items-center bg-white sticky top-0 z-10">
                 <div>
-                    <h3 class="text-lg md:text-xl font-black text-slate-900 tracking-tight">Жаңа тест</h3>
-                    <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">Сұрақтар қосу</p>
+                    <h3 class="text-lg md:text-xl font-black text-slate-900 tracking-tight">{{ __('messages.teacher.new_test') }}</h3>
+                    <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-0.5">{{ __('messages.teacher.add_questions') }}</p>
                 </div>
                 <button onclick="closeTestModal()" class="p-2 md:p-3 bg-slate-50 text-slate-400 hover:text-red-500 rounded-xl transition-all">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="2.5" stroke-linecap="round"/></svg>
@@ -553,8 +592,8 @@ function addQuestion() {
 
             <div class="p-5 md:p-6 max-h-[75vh] sm:max-h-[70vh] overflow-y-auto custom-scrollbar space-y-6">
                 <div>
-                    <label class="text-[9px] font-black text-indigo-500 uppercase tracking-[0.2em] ml-1">Тесттің жалпы атауы</label>
-                    <input type="text" id="testTitle" placeholder="Мысалы: Курс қорытындысы" 
+                    <label class="text-[9px] font-black text-indigo-500 uppercase tracking-[0.2em] ml-1">{{ __('messages.teacher.test_general_title') }}</label>
+                    <input type="text" id="testTitle" placeholder="{{ __('messages.teacher.test_title_example') }}" 
                            class="w-full bg-slate-50 border-none focus:ring-2 focus:ring-indigo-500 px-5 py-3.5 rounded-xl mt-1.5 font-bold text-slate-700 text-sm">
                 </div>
 
@@ -562,13 +601,13 @@ function addQuestion() {
 
                 <button onclick="addQuestion()" class="w-full py-3.5 border-2 border-dashed border-slate-200 rounded-xl text-slate-400 font-black text-[9px] uppercase tracking-widest hover:border-indigo-300 hover:text-indigo-600 transition-all flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="3" stroke-linecap="round"/></svg>
-                    Тағы сұрақ қосу
+                    {{ __('messages.teacher.add_more_questions') }}
                 </button>
             </div>
 
             <div class="p-5 md:p-6 bg-slate-50 border-t border-slate-100 flex gap-3">
-                <button onclick="closeTestModal()" class="flex-1 py-3.5 rounded-xl bg-white border border-slate-200 text-slate-500 font-black text-[9px] uppercase tracking-widest hover:bg-slate-100 transition-all">Бас тарту</button>
-                <button onclick="saveTest()" class="flex-[2] py-3.5 rounded-xl bg-indigo-600 text-white font-black text-[9px] uppercase tracking-widest shadow-lg shadow-indigo-200 hover:bg-indigo-700 active:scale-[0.98] transition-all">Жариялау</button>
+                <button onclick="closeTestModal()" class="flex-1 py-3.5 rounded-xl bg-white border border-slate-200 text-slate-500 font-black text-[9px] uppercase tracking-widest hover:bg-slate-100 transition-all">{{ __('messages.teacher.cancel') }}</button>
+                <button onclick="saveTest()" class="flex-[2] py-3.5 rounded-xl bg-indigo-600 text-white font-black text-[9px] uppercase tracking-widest shadow-lg shadow-indigo-200 hover:bg-indigo-700 active:scale-[0.98] transition-all">{{ __('messages.teacher.publish_test') }}</button>
             </div>
         </div>
     </div>

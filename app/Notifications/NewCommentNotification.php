@@ -4,13 +4,11 @@ namespace App\Notifications;
 
 use App\Models\Comment;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 class NewCommentNotification extends Notification
 {
-  use Queueable;
+    use Queueable;
 
     protected $comment;
 
@@ -21,13 +19,15 @@ class NewCommentNotification extends Notification
 
     public function via($notifiable)
     {
-        return ['database']; // уведомление сохраняется в БД
+        return ['database'];
     }
 
     public function toDatabase($notifiable)
     {
         return [
-            'message' => 'Жаңа пікір ' . $this->comment->user->name,
+            'message' => __('messages.notifications.new_comment', [
+                'name' => $this->comment->user->name,
+            ]),
             'comment_id' => $this->comment->id,
             'submission_id' => $this->comment->submission_id,
         ];

@@ -23,6 +23,6 @@ class CommentController extends Controller
         ]);
 
 
-        return back()->with('success', 'Комментарий добавлен.');
+        return back()->with('success', __('messages.flash.comment_added'));
     }
 }

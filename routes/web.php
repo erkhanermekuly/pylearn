@@ -11,6 +11,8 @@ use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
+Route::get('/locale/{locale}', [\App\Http\Controllers\LocaleController::class, 'switch'])->name('locale.switch');
+
 Route::middleware('guest')->group(function () {
     Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register.form');
     Route::post('/register', [AuthController::class, 'register'])->name('register');
@@ -39,7 +41,7 @@ Route::get('/', function () {
     return match ($user->role) {
         'student' => redirect()->route('student.dashboard'),
         'teacher' => redirect()->route('teacher.dashboard'),
-        default => abort(403, 'Неизвестная роль')
+        default => abort(403, __('errors.unknown_role'))
     };
 })->middleware('auth');
 

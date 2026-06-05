@@ -45,7 +45,7 @@ class LessonController extends Controller
             'description' => $request->assignment_description,
         ]);
 
-        return redirect()->route('teacher.dashboard')->with('success', 'Сәтті жүктелді.');
+        return redirect()->route('teacher.dashboard')->with('success', __('messages.flash.lesson_uploaded'));
     }
 
     public function destroy($id)
@@ -77,14 +77,14 @@ class LessonController extends Controller
 
             return response()->json([
                 'status' => 'success',
-                'message' => 'Сабақ және оған қатысты барлық тест нәтижелері өшірілді'
+                'message' => __('messages.flash.lesson_deleted')
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
             \Log::error("Өшіру қатесі: " . $e->getMessage());
             return response()->json([
                 'status' => 'error',
-                'message' => 'Қате: ' . $e->getMessage()
+                'message' => __('messages.flash.delete_error', ['message' => $e->getMessage()])
             ], 500);
         }
     }
@@ -114,7 +114,7 @@ class LessonController extends Controller
             'description' => $request->description,
         ]);
 
-        return redirect()->route('teacher.dashboard')->with('success', 'Задание добавлено');
+        return redirect()->route('teacher.dashboard')->with('success', __('messages.flash.assignment_added'));
     }
 
     public function show(Lesson $lesson)

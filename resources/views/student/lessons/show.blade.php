@@ -4,14 +4,14 @@
 <div class="min-h-screen flex flex-col bg-gradient-to-b from-green-50 to-white">
 
     <header class="bg-white shadow-md p-5 flex justify-between items-center sticky top-0 z-10">
-        <h1 class="text-3xl font-extrabold text-green-700 tracking-wide">{{ $lesson->title }}</h1>
+        <h1 class="text-3xl font-extrabold text-green-700 tracking-wide">{{ $lesson->translate('title') }}</h1>
         <a href="{{ route('student.dashboard') }}" class="text-green-600 hover:underline">Назад к списку уроков</a>
     </header>
 
     <main class="flex-1 p-8 overflow-y-auto bg-white min-h-0 rounded-tr-xl rounded-br-xl shadow-inner">
 
         <article class="mb-6 text-green-800 leading-relaxed">
-            {!! nl2br(e($lesson->content)) !!}
+            {!! nl2br(e($lesson->translate('content'))) !!}
         </article>
 
         @if ($lesson->pdf_path)
@@ -23,8 +23,8 @@
 
             @forelse ($lesson->assignments as $assignment)
                 <div class="mb-6 p-4 border border-green-300 rounded bg-green-50">
-                    <h3 class="font-bold text-lg text-green-800 mb-2">{{ $assignment->title }}</h3>
-                    <p class="mb-3 text-green-700">{{ $assignment->description }}</p>
+                    <h3 class="font-bold text-lg text-green-800 mb-2">{{ $assignment->translate('title') }}</h3>
+                    <p class="mb-3 text-green-700">{{ $assignment->translate('description') }}</p>
 
                     @php
                         $submission = $assignment->submissions->first();

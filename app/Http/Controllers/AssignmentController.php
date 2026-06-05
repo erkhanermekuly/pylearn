@@ -25,6 +25,6 @@ class AssignmentController extends Controller
             'description' => $data['description'],
         ]);
 
-        return redirect()->back()->with('success', 'Задание успешно добавлено');
+        return redirect()->back()->with('success', __('messages.flash.assignment_added'));
     }
 }

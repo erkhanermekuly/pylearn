@@ -18,7 +18,29 @@ class TeacherController extends Controller
 
         $students = User::where('role', 'student')->orderBy('name')->get();
 
-        return view('teacher.dashboard', compact('lessons', 'students'));
+        $lessonsForJs = $lessons->map(function (Lesson $lesson) {
+            $data = $lesson->toArray();
+            $data['title'] = $lesson->translate('title');
+            $data['content'] = $lesson->translate('content');
+
+            if ($lesson->test) {
+                $data['test'] = $lesson->test->toArray();
+                $data['test']['title'] = $lesson->test->localizedTitle();
+                $data['test']['questions'] = $lesson->test->localizedQuestions();
+            }
+
+            $data['assignments'] = $lesson->assignments->map(function ($assignment) {
+                $aData = $assignment->toArray();
+                $aData['title'] = $assignment->translate('title');
+                $aData['description'] = $assignment->translate('description');
+
+                return $aData;
+            })->values()->all();
+
+            return $data;
+        })->values();
+
+        return view('teacher.dashboard', compact('lessons', 'students', 'lessonsForJs'));
     }
 
     public function viewSubmission(Submission $submission)
@@ -40,6 +62,6 @@ class TeacherController extends Controller
             $submission->user->notify(new SubmissionFeedbackNotification($submission));
         }
 
-        return redirect()->route('teacher.submission.view', $submission)->with('success', 'Комментарий и оценка обновлены');
+        return redirect()->route('teacher.submission.view', $submission)->with('success', __('messages.flash.feedback_updated'));
     }
 }

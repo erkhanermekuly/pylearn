@@ -2,88 +2,74 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Assignment;
 use App\Models\Lesson;
+use Illuminate\Database\Seeder;
 
 class AssignmentSeeder extends Seeder
 {
     public function run(): void
     {
-        $lessons = Lesson::all();
+        $i18n = require __DIR__ . '/data/content_i18n.php';
 
         $assignmentData = [
-            'Введение в Python' => [
-                [
-                    'title' => 'Установка Python и первая программа',
-                    'description' => 'Установить Python и создать файл с командой print("Hello, World!")',
-                ],
+            [
+                ['title' => 'Python орнату және бірінші бағдарлама', 'description' => 'Python орнатып, print("Hello, World!") командасы бар файл жасаңыз'],
             ],
-            'Переменные и типы данных' => [
-                [
-                    'title' => 'Работа с переменными',
-                    'description' => 'Создать программу, которая демонстрирует основные типы данных в Python',
-                ],
-                [
-                    'title' => 'Преобразование типов',
-                    'description' => 'Написать примеры явного преобразования типов int(), str(), float()',
-                ],
+            [
+                ['title' => 'Айнымалылармен жұмыс', 'description' => 'Python-дағы негізгі деректер типтерін көрсететін бағдарлама жазыңыз'],
+                ['title' => 'Типтерді түрлендіру', 'description' => 'int(), str(), float() функцияларының мысалдарын жазыңыз'],
             ],
-            'Условные операторы' => [
-                [
-                    'title' => 'If-else условия',
-                    'description' => 'Написать программу с проверкой возраста пользователя',
-                ],
-                [
-                    'title' => 'Множественные условия',
-                    'description' => 'Создать калькулятор с использованием if/elif для операций',
-                ],
+            [
+                ['title' => 'If-else шарттары', 'description' => 'Пайдаланушы жasын тексеретін бағдарлама жазыңыз'],
+                ['title' => 'Көп шарттар', 'description' => 'if/elif арқылы операциялар бар калькулятор жасаңыз'],
             ],
-            'Циклы' => [
-                [
-                    'title' => 'Таблица умножения',
-                    'description' => 'Вывести таблицу умножения 9x9 используя вложенные циклы for',
-                ],
-                [
-                    'title' => 'Поиск простых чисел',
-                    'description' => 'Найти все простые числа от 1 до 100',
-                ],
+            [
+                ['title' => 'Көбейтінді кесте', 'description' => 'for циклдерімен 9x9 көбейтінді кестесін шығарыңыз'],
+                ['title' => 'Жай сандарды табу', 'description' => '1-ден 100-ге дейінгі барлық жай сандарды табыңыз'],
             ],
-            'Функции' => [
-                [
-                    'title' => 'Создание функций',
-                    'description' => 'Написать 5 функций для различных математических операций',
-                ],
+            [
+                ['title' => 'Функциялар жасау', 'description' => 'Әртүрлі математикалық операцияларға 5 функция жазыңыз'],
             ],
-            'Списки и словари' => [
-                [
-                    'title' => 'Работа со списками',
-                    'description' => 'Создать программу для обработки списка чисел (сумма, среднее, сортировка)',
-                ],
+            [
+                ['title' => 'Тізімдермен жұмыс', 'description' => 'Сандар тізімін өңдейтін бағдарлама жазыңыз (қосынды, орта, сорттау)'],
             ],
-            'Работа со строками' => [
-                [
-                    'title' => 'Обработка строк',
-                    'description' => 'Написать программу для проверки корректности email с помощью строковых методов',
-                ],
+            [
+                ['title' => 'Жолдарды өңдеу', 'description' => 'Жол әдістері арқылы email дұрыстығын тексеретін бағдарлама жазыңыз'],
             ],
-            'ООП в Python' => [
-                [
-                    'title' => 'Классы и объекты',
-                    'description' => 'Создать класс Student с методами для установки и получения данных',
-                ],
+            [
+                ['title' => 'Класстар мен объектілер', 'description' => 'Student классын деректерді орнату/алу әдістерімен жасаңыз'],
             ],
         ];
 
-        foreach ($lessons as $lesson) {
-            if (isset($assignmentData[$lesson->title])) {
-                foreach ($assignmentData[$lesson->title] as $assignment) {
-                    Assignment::create([
-                        'lesson_id' => $lesson->id,
+        foreach (Lesson::orderBy('id')->get() as $lessonIndex => $lesson) {
+            if (! isset($assignmentData[$lessonIndex])) {
+                continue;
+            }
+
+            $i18nAssignments = $i18n['assignments'][$lessonIndex] ?? [];
+
+            foreach ($assignmentData[$lessonIndex] as $aIndex => $assignment) {
+                $pack = [
+                    'kk' => [
                         'title' => $assignment['title'],
                         'description' => $assignment['description'],
-                    ]);
+                    ],
+                ];
+
+                if (isset($i18nAssignments[$aIndex]['ru'])) {
+                    $pack['ru'] = $i18nAssignments[$aIndex]['ru'];
                 }
+                if (isset($i18nAssignments[$aIndex]['en'])) {
+                    $pack['en'] = $i18nAssignments[$aIndex]['en'];
+                }
+
+                Assignment::create([
+                    'lesson_id' => $lesson->id,
+                    'title' => $assignment['title'],
+                    'description' => $assignment['description'],
+                    'translations' => $pack,
+                ]);
             }
         }
     }
