@@ -1,0 +1,291 @@
+@extends('layouts.app')
+
+@section('content')
+<style>
+    .premium-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .premium-card:hover {
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -6px rgba(0, 0, 0, 0.04);
+        transform: translateY(-2px);
+    }
+    .gradient-text {
+        background: linear-gradient(135deg, #4338ca 0%, #6366f1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+
+<div class="min-h-screen flex" style="background: var(--bg-page-soft)">
+    <main class="flex-1 p-4 sm:p-6 md:p-10 max-w-6xl mx-auto w-full">
+
+        @php
+            // Тапсырмалар статистикасы
+            $userSubmissions = $lessons->flatMap(fn($lesson) => $lesson->assignments)
+                ->map(fn($assignment) => $assignment->submission)
+                ->filter(fn($submission) => $submission !== null && $submission->user_id === auth()->id());
+            $gradedSubmissions = $userSubmissions->filter(fn($submission) => $submission->grade !== null);
+            $averageGrade = $gradedSubmissions->count() > 0 ? round($gradedSubmissions->avg('grade'), 1) : null;
+
+            // Тесттер статистикасы
+            $testIds = $lessons->whereNotNull('test')->pluck('test.id');
+            $testResults = auth()->user()->testResults()->whereIn('test_id', $testIds)->get();
+            $averageTestScore = $testResults->count() > 0 ? round($testResults->avg('score'), 1) : null;
+            
+            function gradeToLetter($grade) {
+                if ($grade >= 90) return 'A';
+                if ($grade >= 80) return 'B';
+                if ($grade >= 70) return 'C';
+                if ($grade >= 60) return 'D';
+                return 'F';
+            }
+            $letterGrade = $averageGrade !== null ? gradeToLetter($averageGrade) : null;
+
+            function gradeTailwindColor($letter) {
+                return match ($letter) {
+                    'A' => 'bg-emerald-500', 'B' => 'bg-blue-500', 'C' => 'bg-amber-500',
+                    'D' => 'bg-orange-500', 'F' => 'bg-rose-500', default => 'bg-slate-400',
+                };
+            }
+            $statusColor = $letterGrade ? gradeTailwindColor($letterGrade) : 'bg-slate-400';
+        @endphp
+
+        {{-- Статистикалық блоктар --}}
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
+            
+            {{-- Орташа баға (Тапсырмалар) --}}
+            <div class="md:col-span-2 bg-white rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.06)] flex justify-between items-center relative overflow-hidden">
+                <div class="relative z-10">
+                    <h3 class="text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-2">Тапсырмалар бағасы</h3>
+                    @if ($averageGrade !== null)
+                        <div class="flex items-baseline space-x-2">
+                            <span class="text-4xl md:text-5xl font-black text-slate-800 tracking-tighter">{{ $averageGrade }}</span>
+                            <span class="text-slate-400 text-lg font-bold">/ 100</span>
+                        </div>
+                        <p class="text-slate-500 text-[10px] md:text-xs mt-3 font-medium">Бағаланған: <span class="text-indigo-600 font-bold">{{ $gradedSubmissions->count() }}</span> тапсырма</p>
+                    @else
+                        <p class="text-slate-400 italic text-sm">Әлі бағаланбаған</p>
+                    @endif
+                </div>
+                
+                @if ($letterGrade)
+                    <div class="relative z-10 h-16 w-16 md:h-20 md:w-20 rounded-2xl rotate-12 flex items-center justify-center text-white text-2xl md:text-3xl font-black {{ $statusColor }} shadow-xl">
+                        <span class="-rotate-12">{{ $letterGrade }}</span>
+                    </div>
+                @endif
+                <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-indigo-50/50 rounded-full blur-3xl"></div>
+            </div>
+
+            {{-- Орташа көрсеткіш (Тесттер) --}}
+            <div class="bg-white rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.06)] flex flex-col justify-center relative overflow-hidden">
+                <h3 class="text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-2">Тест орташа баға</h3>
+                @if ($averageTestScore !== null)
+                    <div class="flex items-baseline space-x-1">
+                        <span class="text-3xl md:text-4xl font-black text-indigo-600 tracking-tighter">{{ $averageTestScore }}%</span>
+                    </div>
+                    <p class="text-slate-500 text-[10px] mt-2">Тапсырылған: <b>{{ $testResults->count() }}</b> тест</p>
+                @else
+                    <p class="text-slate-400 italic text-xs">Тесттер әлі басталмады</p>
+                @endif
+                <div class="absolute -left-4 -top-4 w-16 h-16 bg-blue-50/50 rounded-full blur-2xl"></div>
+            </div>
+
+            {{-- Жалпы Прогресс --}}
+            <div class="bg-white rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border border-slate-200 shadow-[0_20px_50px_rgba(0,0,0,0.06)] flex flex-col justify-center relative overflow-hidden">
+                @php
+                    $totalAssignments = $lessons->flatMap(fn($lesson) => $lesson->assignments)->count();
+                    $totalDone = $lessons->flatMap(fn($lesson) => $lesson->assignments)
+                        ->filter(fn($assignment) => $assignment->submission !== null)->count();
+                    $overallProgress = $totalAssignments > 0 ? round(($totalDone / $totalAssignments) * 100) : 0;
+                @endphp
+                <h3 class="text-slate-400 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] mb-2">Жалпы прогресс</h3>
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-2xl md:text-3xl font-black text-slate-800">{{ $overallProgress }}%</span>
+                </div>
+                <div class="w-full bg-slate-100 rounded-full h-2 shadow-inner">
+                    <div class="bg-indigo-600 h-2 rounded-full transition-all duration-1000" style="width: {{ $overallProgress }}%"></div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Сүзгілер --}}
+        <div class="overflow-x-auto no-scrollbar mb-8 md:mb-10 -mx-4 px-4 sm:mx-0 sm:px-0">
+            <div class="flex items-center space-x-2 md:space-x-3 bg-slate-200/50 p-1 rounded-xl md:rounded-2xl w-max border border-slate-200 shadow-sm">
+                <button data-filter="all" class="filter-btn px-4 md:px-8 py-2 md:py-3 rounded-lg md:rounded-xl text-[10px] md:text-sm font-black transition-all duration-300 bg-white shadow-md text-indigo-600 whitespace-nowrap">
+                    Барлығы
+                </button>
+                <button data-filter="done" class="filter-btn px-4 md:px-8 py-2 md:py-3 rounded-lg md:rounded-xl text-[10px] md:text-sm font-black transition-all duration-300 text-slate-500 hover:bg-white/50 whitespace-nowrap">
+                    Орындалған
+                </button>
+                <button data-filter="notdone" class="filter-btn px-4 md:px-8 py-2 md:py-3 rounded-lg md:rounded-xl text-[10px] md:text-sm font-black transition-all duration-300 text-slate-500 hover:bg-white/50 whitespace-nowrap">
+                    Орындалмаған
+                </button>
+            </div>
+        </div>
+
+        {{-- Сабақтар тізімі --}}
+        <div id="lessonsContainer" class="grid gap-6 md:gap-8">
+            @foreach ($lessons as $lesson)
+                @php
+                    $hasDone = $lesson->assignments->contains(fn($a) => $a->submission !== null);
+                    $hasNotDone = $lesson->assignments->contains(fn($a) => $a->submission === null);
+                    $status = ($hasDone && $hasNotDone) ? 'all' : ($hasDone ? 'done' : 'notdone');
+                @endphp
+
+                <div class="lesson-item premium-card group p-5 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem]" data-status="{{ $status }}">
+                    {{-- Сабақ тақырыбы --}}
+                    <div class="flex flex-col md:flex-row justify-between items-start gap-4 mb-6 md:mb-8">
+                        <div class="flex-1 w-full">
+                            <div class="flex items-center space-x-3 mb-2 md:mb-3">
+                                <span class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.3em] text-indigo-500 bg-indigo-50 px-2 py-0.5 md:py-1 rounded-full border border-indigo-100">Сабақ</span>
+                                <span class="text-[9px] md:text-[10px] font-bold text-slate-400 italic">{{ $lesson->created_at->format('d.m.Y') }}</span>
+                            </div>
+                            <a href="{{ route('student.lessons.show', $lesson->id) }}">
+                                <h4 class="text-xl md:text-2xl font-black text-slate-800 group-hover:text-indigo-600 transition-colors tracking-tight line-clamp-2 md:line-clamp-none">{{ $lesson->title }}</h4>
+                            </a>
+                        </div>
+                        @if ($lesson->pdf_path)
+                            <a href="{{ asset('storage/' . $lesson->pdf_path) }}" target="_blank" class="flex w-full md:w-auto items-center justify-center space-x-2 px-5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl md:rounded-2xl text-slate-600 font-bold hover:bg-indigo-600 hover:text-white transition-all duration-300">
+                                <svg class="w-4 h-4 md:w-5 md:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                <span class="text-[10px] md:text-xs">Материал (PDF)</span>
+                            </a>
+                        @endif
+                    </div>
+
+                    <p class="text-slate-500 text-xs md:text-sm leading-relaxed mb-6 md:mb-10 max-w-3xl">{{ Str::limit($lesson->content, 150) }}</p>
+
+                    {{-- Тапсырмалар мен Тесттер --}}
+                    <div class="pt-6 md:pt-8 border-t border-slate-100">
+                        <h5 class="text-[9px] md:text-xs font-black uppercase tracking-[0.2em] text-slate-400 mb-4 md:mb-6 flex items-center">
+                            <span class="w-6 md:w-8 h-[2px] bg-slate-200 mr-2 md:mr-3"></span>
+                            Сабақ тапсырмалары
+                        </h5>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+    @foreach ($lesson->assignments as $assignment)
+        @php
+            $submission = $assignment->submission;
+            $isSubmitted = $submission !== null;
+            $isGraded = $isSubmitted && $submission->grade !== null;
+        @endphp
+
+        <div class="flex items-center justify-between p-3 md:p-4 rounded-xl md:rounded-2xl bg-slate-50 border border-slate-100 shadow-sm">
+            <div class="flex items-center space-x-3">
+                {{-- Индикатор нүктесі --}}
+                <div class="w-2.5 h-2.5 rounded-full 
+                    @if($isGraded) 
+                        bg-emerald-500 
+                    @elseif($isSubmitted) 
+                        bg-amber-400 animate-pulse 
+                    @else 
+                        bg-slate-300 
+                    @endif">
+                </div>
+                
+                <span class="text-[11px] md:text-sm font-bold text-slate-700 truncate max-w-[120px] md:max-w-none">
+                    {{ $assignment->title }}
+                </span>
+            </div>
+
+            <div class="flex items-center">
+                @if ($isSubmitted)
+                    @if ($isGraded)
+                        {{-- Бағаланған --}}
+                        <span class="text-[9px] md:text-[11px] font-black bg-white px-2 md:px-4 py-1 rounded-lg md:rounded-xl shadow-sm border border-slate-100 text-emerald-600">
+                            {{ $submission->grade }} / 100
+                        </span>
+                    @else
+                        {{-- Жіберілген, бірақ баға жоқ (САРЫ ФОРМА) --}}
+                        <span class="text-[9px] md:text-[11px] font-black bg-amber-100 px-2 md:px-4 py-1 rounded-lg md:rounded-xl shadow-sm border border-amber-200 text-amber-700">
+                            Тексерілуде...
+                        </span>
+                    @endif
+                @else
+                    {{-- Орындалмаған --}}
+                    <span class="text-[8px] md:text-[10px] font-black text-slate-400 uppercase tracking-tighter">
+                        Орындалмаған
+                    </span>
+                @endif
+            </div>
+        </div>
+    @endforeach
+
+    {{-- ТЕСТ БЛОГЫ --}}
+    @if($lesson->test)
+        @php 
+            $currentTestResult = auth()->user()->testResults()->where('test_id', $lesson->test->id)->first(); 
+        @endphp
+        <div class="flex items-center justify-between p-3 md:p-4 rounded-xl md:rounded-2xl bg-indigo-50 border border-indigo-100 shadow-sm">
+            <div class="flex items-center space-x-3">
+                <div class="w-2.5 h-2.5 rounded-full {{ $currentTestResult ? 'bg-indigo-600' : 'bg-amber-500 animate-pulse' }}"></div>
+                <div class="flex flex-col">
+                    <span class="text-[11px] md:text-sm font-black text-indigo-900">📝 Тест</span>
+                    <span class="text-[7px] md:text-[9px] uppercase font-bold text-indigo-400 tracking-widest">Білім тексеру</span>
+                </div>
+            </div>
+            @if ($currentTestResult)
+                <span class="text-[9px] md:text-[11px] font-black bg-white px-2 md:px-4 py-1 rounded-lg md:rounded-xl shadow-sm text-indigo-600">
+                    {{ $currentTestResult->score }}%
+                </span>
+            @else
+                <a href="{{ route('student.test.show', $lesson->test->id) }}" class="text-[8px] md:text-[10px] font-black bg-indigo-600 text-white px-3 py-1.5 rounded-lg md:rounded-xl shadow-md uppercase tracking-tighter hover:bg-indigo-700 transition-colors">
+                    Бастау
+                </a>
+            @endif
+        </div>
+    @endif
+</div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        
+        {{-- Хабарлама (бос болса) --}}
+        <div id="noLessonsMessage" class="hidden text-center py-20 md:py-32 bg-white rounded-[2rem] md:rounded-[3rem] border border-slate-200 shadow-xl">
+            <div class="bg-indigo-50 w-16 h-16 md:w-24 md:h-24 rounded-full flex items-center justify-center mx-auto mb-6 text-indigo-300">
+                <svg class="w-8 h-8 md:w-12 md:h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <h3 class="text-lg md:text-xl font-black text-slate-800 mb-2">Ештеңе табылмады</h3>
+            <p class="text-slate-500 font-medium text-xs md:text-sm">Бұл санатта әзірге тапсырмалар жоқ.</p>
+        </div>
+    </main>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const lessons = document.querySelectorAll('.lesson-item');
+        const noLessonsMessage = document.getElementById('noLessonsMessage');
+
+        function updateVisibility(filter) {
+            let visibleCount = 0;
+            lessons.forEach(lesson => {
+                const status = lesson.getAttribute('data-status');
+                if (filter === 'all' || status === filter || status === 'all') {
+                    lesson.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    lesson.style.display = 'none';
+                }
+            });
+            noLessonsMessage.classList.toggle('hidden', visibleCount > 0);
+        }
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => {
+                    btn.classList.remove('bg-white', 'shadow-md', 'text-indigo-600');
+                    btn.classList.add('text-slate-500');
+                });
+                button.classList.add('bg-white', 'shadow-md', 'text-indigo-600');
+                button.classList.remove('text-slate-500');
+                updateVisibility(button.getAttribute('data-filter'));
+            });
+        });
+    });
+</script>
+@endsection
