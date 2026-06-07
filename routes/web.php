@@ -51,6 +51,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::middleware(['auth', 'role:student'])->prefix('student')->name('student.')->group(function () {
     Route::get('/dashboard', [StudentDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/code-game', [\App\Http\Controllers\CodeGameController::class, 'index'])->name('code-game');
     Route::get('/lessons/{lesson}', [StudentDashboardController::class, 'showLesson'])->name('lessons.show');
 
     Route::post('/assignments/{assignment}/submit', [StudentDashboardController::class, 'submitAssignment'])->name('assignments.submit');

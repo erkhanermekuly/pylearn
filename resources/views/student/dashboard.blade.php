@@ -56,6 +56,20 @@
             $statusColor = $letterGrade ? gradeTailwindColor($letterGrade) : 'bg-slate-400';
         @endphp
 
+        <a href="{{ route('student.code-game') }}" class="block dash-stat-card rounded-[1.5rem] md:rounded-[2rem] p-5 md:p-6 border mb-6 md:mb-8 group hover:-translate-y-0.5 transition-transform">
+            <div class="flex items-center justify-between gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center text-xl shadow-lg shadow-indigo-200">🧩</div>
+                    <div>
+                        <p class="text-[9px] font-black uppercase tracking-widest text-indigo-500 mb-1">{{ __('messages.code_game.badge') }}</p>
+                        <h3 class="text-lg md:text-xl font-black text-slate-800 group-hover:text-indigo-600 transition-colors">{{ __('messages.code_game.title') }}</h3>
+                        <p class="text-xs text-slate-500 mt-1">{{ __('messages.code_game.dashboard_teaser') }}</p>
+                    </div>
+                </div>
+                <span class="shrink-0 px-4 py-2 rounded-xl bg-indigo-600 text-white text-[10px] font-black uppercase tracking-wider group-hover:bg-indigo-700 transition-colors">{{ __('messages.common.start') }}</span>
+            </div>
+        </a>
+
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
             <div class="md:col-span-2 dash-stat-card rounded-[1.5rem] md:rounded-[2rem] p-6 md:p-8 border shadow-[0_20px_50px_rgba(0,0,0,0.06)] flex justify-between items-center relative overflow-hidden">
                 <div class="relative z-10">

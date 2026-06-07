@@ -11,8 +11,13 @@ class AssignmentSeeder extends Seeder
     public function run(): void
     {
         $i18n = require __DIR__ . '/data/content_i18n.php';
+        $i18nExt = require __DIR__ . '/data/content_i18n_extended.php';
 
-        $assignmentData = [
+        foreach ($i18nExt['assignments'] ?? [] as $index => $pack) {
+            $i18n['assignments'][$index] = $pack;
+        }
+
+        $assignmentData = array_merge([
             [
                 ['title' => 'Python орнату және бірінші бағдарлама', 'description' => 'Python орнатып, print("Hello, World!") командасы бар файл жасаңыз'],
             ],
@@ -40,7 +45,7 @@ class AssignmentSeeder extends Seeder
             [
                 ['title' => 'Класстар мен объектілер', 'description' => 'Student классын деректерді орнату/алу әдістерімен жасаңыз'],
             ],
-        ];
+        ], require __DIR__ . '/data/assignments_extended.php');
 
         foreach (Lesson::orderBy('id')->get() as $lessonIndex => $lesson) {
             if (! isset($assignmentData[$lessonIndex])) {

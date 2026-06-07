@@ -41,6 +41,11 @@
         </a>
 
         <div class="flex items-center space-x-3 lg:space-x-5">
+            @if (!$isTeacher)
+                <a href="{{ route('student.code-game') }}" class="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all border border-indigo-100">
+                    🧩 {{ __('messages.code_game.nav') }}
+                </a>
+            @endif
             @include('partials.locale-switcher')
             @include('partials.theme-toggle')
 

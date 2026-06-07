@@ -9,8 +9,17 @@ class LessonSeeder extends Seeder
 {
     public function run(): void
     {
-        $lessons = require __DIR__ . '/data/python_lessons.php';
+        $lessons = array_merge(
+            require __DIR__ . '/data/python_lessons.php',
+            require __DIR__ . '/data/lessons_extended.php',
+        );
+
         $i18n = require __DIR__ . '/data/content_i18n.php';
+        $i18nExt = require __DIR__ . '/data/content_i18n_extended.php';
+
+        foreach ($i18nExt['lessons'] ?? [] as $index => $pack) {
+            $i18n['lessons'][$index] = $pack;
+        }
 
         foreach ($lessons as $index => $lesson) {
             $localePack = $i18n['lessons'][$index] ?? [];

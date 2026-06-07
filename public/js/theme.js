@@ -13,8 +13,8 @@
         const i18n = window.luminaI18n || {};
         document.querySelectorAll('[data-theme-label]').forEach((el) => {
             el.textContent = theme === 'dark'
-                ? (i18n.themeLight || 'Light')
-                : (i18n.themeDark || 'Dark');
+                ? (i18n.themeLight || '')
+                : (i18n.themeDark || '');
         });
     }
 

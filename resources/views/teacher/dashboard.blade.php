@@ -173,8 +173,8 @@
     }
 </script>
 
-<script>
-    window.luminaI18n = Object.assign(window.luminaI18n || {}, @json([
+@php
+    $teacherI18n = [
         'studentsRegistered' => __('messages.teacher.students_registered'),
         'noLessons' => __('messages.teacher.no_lessons'),
         'noLessonsHint' => __('messages.teacher.no_lessons_hint'),
@@ -207,7 +207,11 @@
         'addMoreQuestions' => __('messages.teacher.add_more_questions'),
         'cancel' => __('messages.teacher.cancel'),
         'publishTest' => __('messages.teacher.publish_test'),
-    ]));
+    ];
+@endphp
+
+<script>
+    window.luminaI18n = Object.assign(window.luminaI18n || {}, @json($teacherI18n));
     const i18n = window.luminaI18n;
 
     const lessons = @json($lessonsForJs ?? $lessons);

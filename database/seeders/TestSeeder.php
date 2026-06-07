@@ -10,10 +10,17 @@ class TestSeeder extends Seeder
 {
     public function run(): void
     {
-        $testData = require __DIR__ . '/data/python_tests.php';
-        $i18n = require __DIR__ . '/data/content_i18n.php';
+        $testData = array_merge(
+            require __DIR__ . '/data/python_tests.php',
+            require __DIR__ . '/data/tests_extended.php',
+        );
 
-        $lessonTitles = array_keys($testData);
+        $i18n = require __DIR__ . '/data/content_i18n.php';
+        $i18nExt = require __DIR__ . '/data/content_i18n_extended.php';
+
+        foreach ($i18nExt['tests'] ?? [] as $index => $pack) {
+            $i18n['tests'][$index] = $pack;
+        }
 
         foreach (Lesson::orderBy('id')->get() as $index => $lesson) {
             if (! isset($testData[$lesson->title])) {
